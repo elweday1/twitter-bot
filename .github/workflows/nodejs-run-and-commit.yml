@@ -3,6 +3,9 @@ name: Run Node.js Script and Commit Changes
 on:
   schedule:
     - cron: "0 */2 * * *" # Runs every two hours
+  push:
+    branches:
+      - main
 
 jobs:
   run-and-commit:
