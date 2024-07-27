@@ -51,6 +51,10 @@ const makeBody = (tweetBody) => ({
 
 
 const {COOKIE, CRSF_TOKEN, AUTHORIZATION} = process.env;
+if (!COOKIE || !CRSF_TOKEN || !AUTHORIZATION){
+  console.log("please set the env variables COOKIE, CRSF_TOKEN, AUTHORIZATION");
+  process.exit(1);
+}
 const headers =  {
   "accept": "*/*",
   "content-type": "application/json",
@@ -66,7 +70,7 @@ async function postTweet(text){
     method: "POST"
   });
   
-  console.log(res);
+  return res;
 }
  
 
@@ -81,24 +85,22 @@ const PARSE_OPTIONS = {
 }
 
 
-function readCities(fileName, closeCallback){
-  const cities = [];
-  const stream = fs.createReadStream(fileName);
-    stream
-      .pipe(csvParser())
-      .on("data", data => cities.push(data))
-      .on("end", () =>  closeCallback(cities));
-}
-
 function postAndUpdateCities(fileName, cities){
   const index = Math.floor(Math.random() * cities.length);
   const city = cities[index];
   const newCities = cities.filter((_, i) => i !== index);
   csvStringify(newCities, PARSE_OPTIONS, async (err, output) => {
     postTweet(fromatMessage(city.city)).then( async res => {
-      console.log(res);
-      fs.writeFileSync(fileName, output);
-      console.log(`done (${city.city}), remaining cities: ${newCities.length}`);
+      if (res.ok){
+        console.log(res);
+        fs.writeFileSync(fileName, output);
+        console.log(`done (${city.city}), remaining cities: ${newCities.length}`);
+      }
+      else{
+        console.log(res.body);
+        console.log(`failed (${city.city}), remaining cities: ${newCities.length}`);
+        process.exit(1);
+      }
     });
   });
 
