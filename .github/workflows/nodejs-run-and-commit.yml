@@ -5,7 +5,7 @@ on:
     - cron: "0 */2 * * *" # Runs every two hours
   push:
     branches:
-      - main
+      - master
 
 jobs:
   run-and-commit:
