@@ -41,4 +41,4 @@ jobs:
           git commit -am 'Update cities data'
           git config pull.rebase false  # or true for rebase, or ff only for fast-forward only
           git pull origin master
-          git push origin HEAD:main
+          git push origin HEAD:master
