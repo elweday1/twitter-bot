@@ -22,6 +22,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+      
+      - name: Create .env File
+        run: |
+          echo "AUTHORIZATION=${{ secrets.AUTHORIZATION }}" >> .env
+          echo "COOKIE=${{ secrets.COOKIE }}" >> .env
+          CRSF_TOKEN=${{ secrets.CRSF_TOKEN }} >> .env
 
       - name: Run Node.js Script
         run: node index.js
