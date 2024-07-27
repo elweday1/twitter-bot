@@ -27,10 +27,10 @@ jobs:
         run: |
           echo "AUTHORIZATION=${{ secrets.AUTHORIZATION }}" >> .env
           echo "COOKIE=${{ secrets.COOKIE }}" >> .env
-          CRSF_TOKEN=${{ secrets.CRSF_TOKEN }} >> .env
+          echo "CRSF_TOKEN=${{ secrets.CRSF_TOKEN }}" >> .env
 
       - name: Run Node.js Script
-        run: node index.js
+        run: node .
 
       - name: Commit and Push Changes
         env:
