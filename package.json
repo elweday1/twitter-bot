@@ -9,6 +9,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "csv-parser": "^3.0.0",
+    "csv-stringify": "^6.5.1",
     "dotenv": "^16.4.5"
   }
 }

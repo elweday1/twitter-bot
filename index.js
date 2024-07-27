@@ -1,4 +1,13 @@
+const fs = require("fs"); 
+const csvParser = require("csv-parser");
+const { stringify: csvStringify } = require("csv-stringify");
+const dotenv = require("dotenv");
+
+
+dotenv.config();
 const CREATE_TWEET_QUERY_ID = "FcQ8KP1fbPXkq2AugbyXGw"
+
+
 const makeBody = (tweetBody) => ({
   "variables": {
     "tweet_text": tweetBody,
@@ -35,17 +44,20 @@ const makeBody = (tweetBody) => ({
     "responsive_web_graphql_timeline_navigation_enabled": true,
     "responsive_web_enhance_cards_enabled": false
   },
+
   "queryId": CREATE_TWEET_QUERY_ID
 })
 
+
+
+const {COOKIE, CRSF_TOKEN, AUTHORIZATION} = process.env;
 const headers =  {
   "accept": "*/*",
-  "authorization": "Bearer " + process.env.TWITTER_TOKEN,
   "content-type": "application/json",
-  "x-csrf-token": process.env.CRSF_TOKEN,
-  "cookie": process.env.COOKIE,
+  "x-csrf-token": CRSF_TOKEN,
+  "authorization": AUTHORIZATION,
+  "cookie": COOKIE,
 }
-
 
 async function postTweet(text){
   const res = await fetch(`https://x.com/i/api/graphql/${CREATE_TWEET_QUERY_ID}/CreateTweet`, { 
@@ -56,7 +68,57 @@ async function postTweet(text){
   
   console.log(res);
 }
+ 
 
-require('dotenv').config()
+function fromatMessage(cityName){ 
+  return `fuck ${cityName}`;
+}
 
-postTweet("Hello World");
+const FILE_NAME = "eg-cities.csv";
+const PARSE_OPTIONS = {
+  header: true,
+  columns: { city : "city", governance : "governance" },
+}
+
+
+function readCities(fileName, closeCallback){
+  const cities = [];
+  const stream = fs.createReadStream(fileName);
+    stream
+      .pipe(csvParser())
+      .on("data", data => cities.push(data))
+      .on("end", () =>  closeCallback(cities));
+}
+
+function postAndUpdateCities(fileName, cities){
+  const index = Math.floor(Math.random() * cities.length);
+  const city = cities[index];
+  const newCities = cities.filter((_, i) => i !== index);
+  csvStringify(newCities, PARSE_OPTIONS, async (err, output) => {
+    postTweet(fromatMessage(city.city)).then( async res => {
+      console.log(res);
+      fs.writeFileSync(fileName, output);
+      console.log(`done (${city.city}), remaining cities: ${newCities.length}`);
+    });
+  });
+
+
+}
+
+
+function postRandomCity(fileName, closeCallback){
+  const cities = [];
+  const stream = fs.createReadStream(fileName);
+    stream
+      .pipe(csvParser())
+      .on("data", data => cities.push(data))
+      .on("end", () =>  closeCallback(cities));
+}
+
+
+postRandomCity(FILE_NAME, (cities) => {
+  postAndUpdateCities(FILE_NAME, cities);
+})
+
+
+
