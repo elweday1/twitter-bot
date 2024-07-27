@@ -34,9 +34,9 @@ jobs:
 
       - name: Commit and Push Changes
         env:
-          REPO_PAT: ${{ secrets.REPO_PAT }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git commit -am 'Update cities data'
-          git push https://x-access-token:${REPO_PAT}@github.com/${{ github.repository }}.git HEAD:main
+          git push --set-upstream origin master
