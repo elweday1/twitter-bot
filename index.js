@@ -75,7 +75,7 @@ async function postTweet(text){
  
 
 function fromatMessage(cityName){ 
-  return `fuck ${cityName}`;
+  return `${cityName}`;
 }
 
 const FILE_NAME = "eg-cities.csv";
