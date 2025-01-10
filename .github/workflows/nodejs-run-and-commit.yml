@@ -1,8 +1,8 @@
 name: Run Node.js Script and Commit Changes
 
 on:
-  schedule:
-    - cron: "0 */2 * * *" # Runs every two hours
+ # schedule:
+ #  - cron: "0 */2 * * *" # Runs every two hours
   push:
     branches:
       - master
